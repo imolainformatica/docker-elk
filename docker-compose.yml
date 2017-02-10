@@ -10,6 +10,8 @@ services:
       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
     networks:
       - docker_elk
+    volumes:
+      - ./data:/usr/share/elasticsearch/data
   logstash:
     build: logstash/
     command: -f /etc/logstash/conf.d/
@@ -17,6 +19,7 @@ services:
       - ./logstash/config:/etc/logstash/conf.d
     ports:
       - "5000:5000"
+      - "5044:5044"
     networks:
       - docker_elk
     depends_on:
@@ -31,6 +34,13 @@ services:
       - docker_elk
     depends_on:
       - elasticsearch
+  filebeat:
+    build: filebeat/
+    networks:
+      - docker_elk
+    volumes:
+      - ./filebeat/config:/etc/filebeat
+      - /home/morlins/imolinfoSvn/vpnc-file-downloader/log:/log
 
 networks:
   docker_elk:

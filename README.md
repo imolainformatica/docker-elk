@@ -93,7 +93,7 @@ The logstash configuration is stored in `logstash/config/logstash.conf`.
 
 The folder `logstash/config` is mapped onto the container `/etc/logstash/conf.d` so you
 can create more than one file in that folder if you'd like to. However, you must be aware that config files will be read from the directory in alphabetical order.
-
+For Filter grok options see https://github.com/elastic/logstash/blob/v1.4.2/patterns/grok-patterns
 ## How can I specify the amount of memory used by Logstash?
 
 The Logstash container use the *LS_HEAP_SIZE* environment variable to determine how much memory should be associated to the JVM heap memory (defaults to 500m).

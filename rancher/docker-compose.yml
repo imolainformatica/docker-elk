@@ -1,0 +1,67 @@
+version: '2'
+volumes:
+  logAcantho2:
+    external: true
+    driver: 'null'
+  elastichSearchImolaInRete:
+    external: true
+    driver: 'null'
+services:
+  logstash:
+    image: morlins/logstash-withconfig:ImolaInRete
+    stdin_open: true
+    tty: true
+    links:
+    - elasticsearch:elasticsearch
+    ports:
+    - 5007:5000/tcp
+    - 5744:5044/tcp
+    command:
+    - -f
+    - /etc/logstash/conf.d/
+    labels:
+      io.rancher.container.pull_image: always
+  Vpnc-file-downloader:
+    cap_add:
+    - NET_ADMIN
+    image: docker.imolinfo.it:5005/docker-imola/vpnc-file-downloader:latest
+    stdin_open: true
+    volumes:
+    - /home/core/docker-ImolaInRete/logApacheAcantho:/log
+    - logAcantho2:/log2
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
+  elasticsearch:
+    image: morlins/elasticsearch-withconfig:ImolaInRete
+    environment:
+      ES_JAVA_OPTS: -Xms1g -Xmx1g
+    stdin_open: true
+    volumes:
+    - elastichSearchImolaInRete:/usr/share/elasticsearch/data
+    tty: true
+    ports:
+    - 9207:9200/tcp
+    - 9307:9300/tcp
+    labels:
+      io.rancher.container.pull_image: always
+  Filebeat:
+    image: docker.imolinfo.it:5005/docker-imola/filebeat-withconfig:RancherImolaInReteProd2
+    stdin_open: true
+    volumes:
+    - /home/core/docker-ImolaInRete/logApacheAcantho:/log
+    tty: true
+    links:
+    - logstash:logstash
+    labels:
+      io.rancher.container.pull_image: always
+  kibana:
+    image: morlins/kibana-withconfig:ImolaInRete
+    stdin_open: true
+    tty: true
+    links:
+    - elasticsearch:elasticsearch
+    ports:
+    - 5671:5601/tcp
+    labels:
+      io.rancher.container.pull_image: always
